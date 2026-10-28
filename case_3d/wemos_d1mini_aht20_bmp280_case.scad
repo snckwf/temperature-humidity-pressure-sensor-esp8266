@@ -1,31 +1,31 @@
-// Case parametrico per WEMOS D1 Mini V4 + modulo AHT20 + BMP280
-// Progettato per stampa 3D FDM
-// - corpo + coperchio separati
-// - buona aerazione
-// - finestra aperta sopra il sensore
-// - apertura laterale USB-C per il Wemos
+// Parametric case for WEMOS D1 Mini V4 + AHT20 + BMP280 module
+// Designed for FDM 3D printing
+// - separate body + lid
+// - good ventilation
+// - open window above the sensor
+// - side USB-C opening for the Wemos
 //
-// Nota: il modulo sensore AHT20+BMP280 esiste in piccole varianti.
-// Le quote qui sotto sono parametriche: se il tuo modulo differisce,
-// modifica solo i valori nella sezione PARAMETRI.
+// Note: the AHT20+BMP280 sensor module comes in slightly different variants.
+// The dimensions below are parametric: if your module is different,
+// only change the values in the PARAMETERS section.
 
 $fn = 48;
 
 // =========================
-// VISUALIZZAZIONE / STAMPA
+// VIEW / PRINT
 // =========================
-show_print_layout = true;   // true = corpo e coperchio pronti da esportare/stampare
-show_assembly     = false;  // true = mostra il montaggio chiuso
+show_print_layout = true;   // true = body and lid laid out for export/printing
+show_assembly     = false;  // true = show the closed assembly
 
 // =========================
-// PARAMETRI PRINCIPALI
+// MAIN PARAMETERS
 // =========================
 // WEMOS D1 Mini V4
 wemos_l = 34.3;
 wemos_w = 25.4;
-wemos_h = 10.5;   // altezza prudenziale con componenti/header bassi
+wemos_h = 10.5;   // conservative height with low components/headers
 
-// Modulo AHT20 + BMP280 (tipico 16 x 16 / 16.5 mm)
+// AHT20 + BMP280 module (typically 16 x 16 / 16.5 mm)
 sensor_l = 16.5;
 sensor_w = 16.0;
 sensor_h = 5.0;
@@ -36,24 +36,24 @@ floor_t     = 2.2;
 lid_t       = 2.0;
 lip_h       = 3.2;
 lip_t       = 1.3;
-fit         = 0.25;   // gioco coperchio-base
+fit         = 0.25;   // lid-to-base clearance
 corner_r    = 4.0;
 board_clear = 0.8;
 inner_h     = 12.5;
 
-// Layout interno
-front_space = 5.0;    // spazio lato USB
-channel_gap = 6.0;    // spazio cavi tra Wemos e sensore
+// Internal layout
+front_space = 5.0;    // space on the USB side
+channel_gap = 6.0;    // wiring space between Wemos and sensor
 rear_space  = 3.5;
 
-// Supporti schede
+// Board supports
 standoff_h  = 2.0;
 standoff_xy = 2.8;
 ret_h       = 1.2;
 ret_t       = 1.2;
 ret_gap     = 0.35;
 
-// Finestra sensore
+// Sensor window
 sensor_window_margin = 1.4;
 
 // Vents
@@ -66,13 +66,13 @@ top_slot_w   = 2.0;
 top_slot_l   = 11.0;
 top_slot_gap = 2.0;
 
-// USB-C apertura (abbondante per tolleranze)
+// USB-C opening (generous for tolerances)
 usb_open_w = 12.0;
 usb_open_h = 6.0;
 usb_open_z = floor_t + standoff_h + 1.2;
 
 // =========================
-// DIMENSIONI DERIVATE
+// DERIVED DIMENSIONS
 // =========================
 inner_l = front_space + wemos_l + channel_gap + sensor_l + rear_space;
 inner_w = max(wemos_w, sensor_w) + 2*board_clear;
@@ -110,13 +110,13 @@ module board_posts(x, y, l, w, z0=0) {
 }
 
 module board_retainers(x, y, l, w, z0=standoff_h) {
-    // labbri bassi che impediscono lo spostamento laterale della PCB
-    // bordo sinistro e destro
+    // low lips that stop the PCB from sliding sideways
+    // left and right edges
     translate([x - ret_t + ret_gap, y + ret_gap, z0])
         cube([ret_t, w - 2*ret_gap, ret_h]);
     translate([x + l - ret_gap, y + ret_gap, z0])
         cube([ret_t, w - 2*ret_gap, ret_h]);
-    // bordo posteriore
+    // rear edge
     translate([x + ret_gap, y + w - ret_t + ret_gap, z0])
         cube([l - 2*ret_gap, ret_t, ret_h]);
 }
@@ -175,50 +175,50 @@ module usb_cutout() {
 }
 
 // =========================
-// CORPO
+// BODY
 // =========================
 module case_base() {
     union() {
         difference() {
             rounded_box([outer_l, outer_w, base_h], corner_r);
 
-            // cavità principale
+            // main cavity
             translate([wall, wall, floor_t])
                 rounded_box([inner_l, inner_w, inner_h + 0.2], max(0.8, corner_r - wall));
 
-            // apertura USB-C
+            // USB-C opening
             usb_cutout();
 
-            // feritoie laterali
+            // side vents
             side_vents(wall + 4, wemos_x + wemos_l + 1.0, true);
             side_vents(wall + 4, wemos_x + wemos_l + 1.0, false);
             side_vents(sensor_x - 1.0, sensor_x + sensor_l + 0.5, true);
             side_vents(sensor_x - 1.0, sensor_x + sensor_l + 0.5, false);
 
-            // feritoie inferiori
+            // bottom vents
             bottom_vents(wemos_x + 3.0, wemos_x + wemos_l - 4.0);
             bottom_vents(sensor_x + 1.5, sensor_x + sensor_l - 1.5, y_margin=6.0, slot_w=1.8, slot_l=7.0);
         }
 
-        // supporti Wemos
+        // Wemos supports
         board_posts(wemos_x, wemos_y, wemos_l, wemos_w, floor_t);
         board_retainers(wemos_x, wemos_y, wemos_l, wemos_w, floor_t + standoff_h);
 
-        // invito frontale più basso lato USB per facilitare l'inserimento
+        // lower front lead-in on the USB side to make insertion easier
         translate([wemos_x + ret_gap, wemos_y + ret_gap, floor_t + standoff_h])
             cube([3.0, ret_t, ret_h]);
         translate([wemos_x + ret_gap, wemos_y + wemos_w - ret_gap, floor_t + standoff_h])
             cube([3.0, ret_t, ret_h]);
 
-        // supporti sensore
+        // sensor supports
         board_posts(sensor_x, sensor_y, sensor_l, sensor_w, floor_t);
         board_retainers(sensor_x, sensor_y, sensor_l, sensor_w, floor_t + standoff_h);
 
-        // piccoli fermi frontali sensore
+        // small front sensor stops
         translate([sensor_x + ret_gap, sensor_y - ret_t + ret_gap, floor_t + standoff_h])
             cube([sensor_l - 2*ret_gap, ret_t, ret_h]);
 
-        // canalina aperta per i cavi I2C tra Wemos e sensore
+        // open channel for the I2C wires between Wemos and sensor
         translate([wemos_x + wemos_l + 0.8,
                    outer_w/2 - 4,
                    floor_t])
@@ -227,14 +227,14 @@ module case_base() {
 }
 
 // =========================
-// COPERCHIO (orientato per stampa)
+// LID (oriented for printing)
 // =========================
 module case_lid_print() {
     difference() {
         union() {
             rounded_box([outer_l, outer_w, lid_t], corner_r);
 
-            // labbro interno a pressione
+            // inner press-fit lip
             translate([wall + fit, wall + fit, lid_t])
                 difference() {
                     rounded_box([inner_l - 2*fit, inner_w - 2*fit, lip_h], max(0.8, corner_r - wall - fit));
@@ -246,20 +246,20 @@ module case_lid_print() {
                 }
         }
 
-        // finestrella grande sopra il sensore
+        // large window above the sensor
         sensor_window();
 
-        // feritoie superiori sopra il Wemos
+        // top vents above the Wemos
         top_vents_wemos();
 
-        // unghia per aprire il coperchio
+        // finger notch to open the lid
         translate([4.0, outer_w/2 - 6, -0.1])
             rounded_hole([5.0, 12.0, lid_t + 0.3], r=1.5);
     }
 }
 
 // =========================
-// COPERCHIO ASSEMBLATO
+// ASSEMBLED LID
 // =========================
 module case_lid_assembled() {
     translate([0, outer_w, base_h + lid_t + lip_h])

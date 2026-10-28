@@ -1,77 +1,77 @@
-# Sensore Temperature, Umidità e Pressione per Home Assistant
+# Temperature, humidity and pressure sensor for Home Assistant
 
-> 📖 **Articolo completo con schema, foto e spiegazioni passo passo:**  
-> **[Sensore Temperature, Umidità e Pressione per Home Assistant – www.emgi.it](https://www.emgi.it/2026/04/03/sensore-temperature-umidita-e-pressione-per-home-assistant/)**
+> 📖 **Full article with wiring diagram, photos and step-by-step explanations (in Italian):**  
+> **[Temperature, humidity and pressure sensor for Home Assistant – www.emgi.it](https://www.emgi.it/2026/04/03/sensore-temperature-umidita-e-pressione-per-home-assistant/)**
 >
-> Altri progetti di elettronica, Arduino, ESP32, Home Assistant e stampa 3D su **[www.emgi.it](https://www.emgi.it)**
+> More electronics, Arduino, ESP32, Home Assistant and 3D printing projects at **[www.emgi.it](https://www.emgi.it)**
 
-![Sensore Temperature, Umidità e Pressione per Home Assistant](immagini/copertina-3d.jpg)
+![Temperature, humidity and pressure sensor for Home Assistant](images/cover-3d.jpg)
 
-Questo progetto si integra in Home Assistant. Se non l’hai ancora installato, parti dalla guida [Come installare Home Assistant su Raspberry Pi 4, 5 e Zero](https://www.emgi.it/2026/04/14/installare-home-assistant-su-raspberry-pi/).
+This project integrates with Home Assistant. If you have not installed it yet, start from the guide [How to install Home Assistant on Raspberry Pi 4, 5 and Zero](https://www.emgi.it/2026/04/14/installare-home-assistant-su-raspberry-pi/) (in Italian).
 
-Monitorare i parametri ambientali in tempo reale è uno dei modi più semplici e utili per rendere davvero intelligente una casa o un laboratorio. In questo progetto ho realizzato un sensore Wi-Fi compatibile con Home Assistant, capace di rilevare **temperatura**, **umidità** e **pressione atmosferica** in modo continuo e affidabile.
+Monitoring environmental conditions in real time is one of the simplest and most useful ways to make a home or a lab truly smart. In this project I built a Wi-Fi sensor compatible with Home Assistant that continuously and reliably measures **temperature**, **humidity** and **atmospheric pressure**.
 
-## A cosa serve
+## What it is for
 
-Un sensore di questo tipo può essere utile in molti scenari:
+A sensor like this is useful in many situations:
 
-- monitoraggio climatico di una stanza
-- controllo ambiente in laboratorio
-- verifica condizioni in cantina, garage o soffitta
-- attivazione automatica di ventole, deumidificatori o notifiche
-- raccolta dati per statistiche e analisi nel tempo
+- monitoring the climate of a room
+- keeping an eye on the lab environment
+- checking conditions in a cellar, garage or attic
+- automatically switching fans, dehumidifiers or sending notifications
+- collecting data for statistics and long-term analysis
 
-## Componenti utilizzati
+## Parts used
 
-Per questo progetto è possibile usare una scheda Wi-Fi compatta come ESP32 o ESP8266, insieme a un sensore adatto alla rilevazione ambientale.
+You can use a compact Wi-Fi board such as an ESP32 or ESP8266, together with a suitable environmental sensor.
 
-Componenti tipici:
+Typical parts:
 
-- scheda **ESP8266** **WEMOS D1 Mini V4.0.0**
-- sensore ambientale **BME280** **+** **AHT20** (modulo unico) oppure altra combinazione equivalente per temperatura, umidità e pressione
-- alimentazione USB
-- eventuale case stampato in 3D
-- cavi Dupont e basetta di supporto
+- **ESP8266** board **WEMOS D1 Mini V4.0.0**
+- **BMP280 + AHT20** environmental sensor (single module) or another equivalent combination for temperature, humidity and pressure
+- USB power supply
+- optional 3D-printed case
+- Dupont wires and a mounting board
 
-## Collegamenti elettrici
+## Wiring
 
-Scheda: **Wemos D1 mini** (ESP8266) con modulo combinato **AHT20 + BMP280** (I2C). Pin verificati sullo sketch (`I2C_SDA 4`, `I2C_SCL 5`, `Wire.begin(I2C_SDA, I2C_SCL)`).
+Board: **Wemos D1 mini** (ESP8266) with a combined **AHT20 + BMP280** module (I2C). Pins checked against the sketch (`I2C_SDA 4`, `I2C_SCL 5`, `Wire.begin(I2C_SDA, I2C_SCL)`).
 
-| Wemos D1 mini | Modulo AHT20 + BMP280 |
+| Wemos D1 mini | AHT20 + BMP280 module |
 |---|---|
 | **3V3** | VCC (VIN) |
 | **GND** | GND |
 | **D2 / GPIO4** | SDA |
 | **D1 / GPIO5** | SCL |
 
-- Alimenta il modulo a **3,3 V**.
-- Il case ([`case_3d`](case_3d)) tiene il sensore separato dal D1 mini: il calore della scheda falserebbe la temperatura.
+- Power the module from **3.3 V**.
+- The case ([`case_3d`](case_3d)) keeps the sensor separate from the D1 mini: the board's heat would skew the temperature reading.
+- The Wemos D1 mini is powered from its 5 V USB port; the module takes 3.3 V from the **3V3** pin, nothing else is needed.
+- I2C modules already have pull-up resistors on board: no external resistors are needed.
 
-- Il Wemos D1 mini si alimenta dalla sua USB a 5 V; il modulo prende i 3,3 V dal pin **3V3**, non serve altro.
-- I moduli I2C hanno già le resistenze di pull-up a bordo: non servono resistenze esterne.
+## Repository contents
 
-## Contenuto del repository
-
-| Percorso | Descrizione |
+| Path | Description |
 |---|---|
-| `Sensore_Ambientale_ESP8266/Sensore_Ambientale_ESP8266.ino` | Sketch Arduino |
-| `case_3d/wemos_d1mini_aht20_bmp280_case.scad` | Sorgente OpenSCAD parametrico |
-| `case_3d/wemos_d1mini_aht20_bmp280_case.stl` | Modello 3D da stampare |
-| `immagini/` | Foto e immagini dell'articolo |
+| `Climate_Sensor_ESP8266/Climate_Sensor_ESP8266.ino` | Arduino sketch |
+| `case_3d/wemos_d1mini_aht20_bmp280_case.scad` | Parametric OpenSCAD source |
+| `case_3d/wemos_d1mini_aht20_bmp280_case.stl` | 3D model to print |
+| `images/` | Photos and images |
 
-## Come si usa
+## How to use it
 
-1. Apri [`Sensore_Ambientale_ESP8266.ino`](Sensore_Ambientale_ESP8266) con Arduino IDE.
-2. Modifica SSID, password WiFi, IP e gateway (righe 7-11) e il nome del sensore.
-3. Il case è parametrico: [`case_3d/wemos_d1mini_aht20_bmp280_case.scad`](case_3d) si apre con OpenSCAD.
+1. Open [`Climate_Sensor_ESP8266.ino`](Climate_Sensor_ESP8266) in the Arduino IDE.
+2. Set your Wi-Fi SSID, password, IP address and gateway (lines 7-11) and the sensor name.
+3. Upload it, then open `http://<sensor-IP>/` for the web dashboard; Home Assistant can read `http://<sensor-IP>/api/ha` (JSON with temperature, humidity and pressure).
+4. The case is parametric: open [`case_3d/wemos_d1mini_aht20_bmp280_case.scad`](case_3d) with OpenSCAD.
 
-Schema dei collegamenti, dettagli e risoluzione dei problemi: **[articolo su www.emgi.it](https://www.emgi.it/2026/04/03/sensore-temperature-umidita-e-pressione-per-home-assistant/)**.
+Wiring diagram, details and troubleshooting: **[article on www.emgi.it](https://www.emgi.it/2026/04/03/sensore-temperature-umidita-e-pressione-per-home-assistant/)** (in Italian).
 
-## Licenza
+## License
 
-- Codice e configurazioni: [MIT](LICENSE)
-- Modelli 3D, schemi e immagini: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.it)
+- Code and configuration: [MIT](LICENSE)
+- 3D models, diagrams and images: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ---
 
-**Autore:** Massimiliano Sandrin – **[eMGi.it](https://www.emgi.it)** · Domande e commenti sotto l'[articolo sul sito](https://www.emgi.it/2026/04/03/sensore-temperature-umidita-e-pressione-per-home-assistant/).
+**Author:** Massimiliano Sandrin – **[eMGi.it](https://www.emgi.it)** · Questions and comments below the [article on the website](https://www.emgi.it/2026/04/03/sensore-temperature-umidita-e-pressione-per-home-assistant/).

@@ -4,8 +4,8 @@
 #include <Adafruit_AHTX0.h>
 #include <Adafruit_BMP280.h>
 
-const char* WIFI_SSID = "il tuo ssid";
-const char* WIFI_PASS = "la tua password wifi";
+const char* WIFI_SSID = "your ssid";
+const char* WIFI_PASS = "your wifi password";
 
 IPAddress local_IP(192, 168, xxx, xxx);
 IPAddress gateway(192, 168, xxx, xxx);
@@ -13,8 +13,8 @@ IPAddress subnet(255, 255, 255, 0);
 IPAddress dns1(1, 1, 1, 1);
 IPAddress dns2(1, 0, 0, 1);
 
-const char* DEVICE_NAME = "Nome sensore";
-const char* HOST_NAME   = "esp8266-nome sensore";
+const char* DEVICE_NAME = "Sensor name";
+const char* HOST_NAME   = "esp8266-sensor-name";
 
 #define I2C_SDA 4   // GPIO4 = D2
 #define I2C_SCL 5   // GPIO5 = D1
@@ -46,9 +46,9 @@ uint16_t histIndex = 0;
 uint16_t histCount = 0;
 
 const char INDEX_HTML[] PROGMEM = R"rawliteral(
-<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cantina</title>
+<title>Cellar</title>
 <style>
 :root{
   --bg:#0b1220;--panel:#111827;--card:#1e293b;--line:rgba(148,163,184,.14);
@@ -95,39 +95,39 @@ canvas{
 </style></head><body><div class="wrap">
 <div class="hero">
   <div>
-    <h1 style="margin:0">Cantina</h1>
-    <div class="small">AHT20 + BMP280 · 192.168.1.43</div>
+    <h1 style="margin:0">Cellar</h1>
+    <div class="small">AHT20 + BMP280</div>
   </div>
-  <div id="ip" class="small">In attesa dati...</div>
+  <div id="ip" class="small">Waiting for data...</div>
 </div>
 
 <div class="grid">
   <div class="card">
-    <div class="label">Temperatura cantina</div>
+    <div class="label">Cellar temperature</div>
     <div class="value" id="temp">--</div>
-    <div id="ahtStatus" class="status bad">AHT20 assente</div>
+    <div id="ahtStatus" class="status bad">AHT20 missing</div>
   </div>
   <div class="card">
-    <div class="label">Umidità cantina</div>
+    <div class="label">Cellar humidity</div>
     <div class="value" id="hum">--</div>
-    <div class="small">Sensore AHT20</div>
+    <div class="small">AHT20 sensor</div>
   </div>
   <div class="card">
-    <div class="label">Pressione cantina</div>
+    <div class="label">Cellar pressure</div>
     <div class="value" id="press">--</div>
-    <div id="bmpStatus" class="status bad">BMP280 assente</div>
+    <div id="bmpStatus" class="status bad">BMP280 missing</div>
   </div>
 </div>
 
 <div class="charts">
-  <div class="chart"><div class="label">Temperatura cantina</div><div class="meta" id="m1">--</div><canvas id="c1"></canvas></div>
-  <div class="chart"><div class="label">Umidità cantina</div><div class="meta" id="m2">--</div><canvas id="c2"></canvas></div>
-  <div class="chart"><div class="label">Pressione cantina</div><div class="meta" id="m3">--</div><canvas id="c3"></canvas></div>
+  <div class="chart"><div class="label">Cellar temperature</div><div class="meta" id="m1">--</div><canvas id="c1"></canvas></div>
+  <div class="chart"><div class="label">Cellar humidity</div><div class="meta" id="m2">--</div><canvas id="c2"></canvas></div>
+  <div class="chart"><div class="label">Cellar pressure</div><div class="meta" id="m3">--</div><canvas id="c3"></canvas></div>
 </div>
 
 <div class="bottom">
   <div class="card">
-    <div class="label">Collegamenti</div>
+    <div class="label">Wiring</div>
     <div class="small">
       GPIO5 → SCL<br>
       GPIO4 → SDA<br>
@@ -142,7 +142,7 @@ canvas{
       <a href="/api/ha" target="_blank">/api/ha</a>
     </div>
     <div class="small">
-      Campioni: <span id="count">--</span><br>
+      Samples: <span id="count">--</span><br>
       Uptime: <span id="up">--</span>
     </div>
   </div>
@@ -163,7 +163,7 @@ function stats(a){
 }
 function meta(id,a,u){
   const s=stats(a);
-  document.getElementById(id).textContent=s?("min "+s.min.toFixed(1)+" "+u+" · max "+s.max.toFixed(1)+" "+u+" · ora "+s.last.toFixed(1)+" "+u):"nessun dato";
+  document.getElementById(id).textContent=s?("min "+s.min.toFixed(1)+" "+u+" · max "+s.max.toFixed(1)+" "+u+" · now "+s.last.toFixed(1)+" "+u):"no data";
 }
 function grad(ctx,h,a,b){
   const g=ctx.createLinearGradient(0,0,0,h);
@@ -195,7 +195,7 @@ function draw(id,data,unit,color,fill1,fill2){
   if(!vals.length){
     ctx.fillStyle="#94a3b8";
     ctx.font="14px Arial";
-    ctx.fillText("Nessun dato",L,T+24);
+    ctx.fillText("No data",L,T+24);
     return;
   }
 
@@ -260,8 +260,8 @@ async function upd(){
     hum.textContent=fmt(j.humidity_cantina,"%");
     press.textContent=fmt(j.pressure_cantina,"hPa");
 
-    status("ahtStatus",j.aht_ok,"AHT20 ok","AHT20 assente/errore");
-    status("bmpStatus",j.bmp_ok,"BMP280 ok","BMP280 assente/errore");
+    status("ahtStatus",j.aht_ok,"AHT20 ok","AHT20 missing/error");
+    status("bmpStatus",j.bmp_ok,"BMP280 ok","BMP280 missing/error");
 
     draw("c1",j.hist.temperature_cantina,"°C","#22d3ee","rgba(34,211,238,.22)","rgba(34,211,238,.02)");
     draw("c2",j.hist.humidity_cantina,"%","#2dd4bf","rgba(45,212,191,.22)","rgba(45,212,191,.02)");
@@ -275,7 +275,7 @@ async function upd(){
     document.getElementById("count").textContent=j.hist_count;
     document.getElementById("up").textContent=j.uptime_s+" s";
   }catch(e){
-    document.getElementById("ip").textContent="Errore lettura dati";
+    document.getElementById("ip").textContent="Error reading data";
   }
 }
 upd();
@@ -319,14 +319,14 @@ void addHistory(float t, float h, float p) {
 
 void connectWiFi() {
   Serial.println();
-  Serial.print("Connessione WiFi a: ");
+  Serial.print("Connecting to WiFi: ");
   Serial.println(WIFI_SSID);
 
   WiFi.mode(WIFI_STA);
   WiFi.hostname(HOST_NAME);
 
   if (!WiFi.config(local_IP, gateway, subnet, dns1, dns2)) {
-    Serial.println("Errore configurazione IP statico");
+    Serial.println("Static IP configuration error");
   }
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
@@ -337,7 +337,7 @@ void connectWiFi() {
   }
 
   Serial.println();
-  Serial.print("WiFi connesso. IP: ");
+  Serial.print("WiFi connected. IP: ");
   Serial.println(WiFi.localIP());
 }
 
@@ -347,9 +347,9 @@ void initSensors() {
 
   ahtPresent = aht.begin();
   if (ahtPresent) {
-    Serial.println("AHT20 rilevato.");
+    Serial.println("AHT20 detected.");
   } else {
-    Serial.println("AHT20 NON rilevato.");
+    Serial.println("AHT20 NOT detected.");
   }
 
   bmpPresent = bmp.begin(0x76);
@@ -363,9 +363,9 @@ void initSensors() {
       Adafruit_BMP280::FILTER_X16,
       Adafruit_BMP280::STANDBY_MS_500
     );
-    Serial.println("BMP280 rilevato.");
+    Serial.println("BMP280 detected.");
   } else {
-    Serial.println("BMP280 NON rilevato.");
+    Serial.println("BMP280 NOT detected.");
   }
 }
 
@@ -399,11 +399,11 @@ void readSensors() {
 
   addHistory(tempCantina, humCantina, pressCantina);
 
-  Serial.print("Temperatura cantina=");
+  Serial.print("Cellar temperature=");
   Serial.print(tempCantina, 1);
-  Serial.print(" C  Umidita cantina=");
+  Serial.print(" C  Cellar humidity=");
   Serial.print(humCantina, 1);
-  Serial.print(" %  Pressione cantina=");
+  Serial.print(" %  Cellar pressure=");
   Serial.print(pressCantina, 1);
   Serial.println(" hPa");
 }
@@ -481,8 +481,8 @@ void setup() {
   server.onNotFound(handleNotFound);
   server.begin();
 
-  Serial.println("Web server avviato.");
-  Serial.print("Apri: http://");
+  Serial.println("Web server started.");
+  Serial.print("Open: http://");
   Serial.print(ipToString(local_IP));
   Serial.println("/");
 
